@@ -1,0 +1,96 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Search, Heart, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useWishlist } from "@/features/wishlist/store";
+
+const LEFT = [
+  { href: "/", label: "Нүүр", icon: Home },
+  { href: "/catalog", label: "Каталог", icon: Search },
+] as const;
+
+const RIGHT = [
+  { href: "/wishlist", label: "Хүсэл", icon: Heart },
+  { href: "/account", label: "Профайл", icon: User },
+] as const;
+
+export function BottomNav() {
+  const pathname = usePathname();
+  const wishCount = useWishlist((s) => s.ids.length);
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const badgeFor = (href: string) =>
+    mounted && href === "/wishlist" ? wishCount : 0;
+
+  return (
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center pb-safe md:hidden">
+      <nav
+        aria-label="Үндсэн цэс"
+        className="pointer-events-auto mb-3 flex items-center gap-1 rounded-full bg-secondary/85 px-2.5 py-2 shadow-lift backdrop-blur"
+      >
+        {LEFT.map((item) => (
+          <Tab
+            key={item.href}
+            {...item}
+            active={isActive(item.href)}
+            badge={badgeFor(item.href)}
+          />
+        ))}
+
+        {RIGHT.map((item) => (
+          <Tab
+            key={item.href}
+            {...item}
+            active={isActive(item.href)}
+            badge={badgeFor(item.href)}
+          />
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+function Tab({
+  href,
+  label,
+  icon: Icon,
+  active,
+  badge,
+}: {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  active: boolean;
+  badge: number;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-label={label}
+      className={cn(
+        "relative flex size-11 items-center justify-center rounded-full transition-colors",
+        active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <Icon
+        className="size-[22px] transition-transform"
+        strokeWidth={active ? 2.3 : 1.8}
+      />
+      {badge > 0 && (
+        <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[9px] font-semibold text-background">
+          {badge}
+        </span>
+      )}
+      {active && (
+        <span className="absolute bottom-1 size-1 rounded-full bg-foreground" />
+      )}
+    </Link>
+  );
+}

@@ -1,0 +1,145 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Package, HelpCircle, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { createClient } from "@/lib/supabase/browser";
+
+interface Profile {
+  name: string;
+  email: string;
+  avatar: string | null;
+}
+
+export function ProfileMenu() {
+  const router = useRouter();
+  const [profile, setProfile] = React.useState<Profile | null>(null);
+  const [configured, setConfigured] = React.useState(true);
+
+  React.useEffect(() => {
+    const supabase = createClient();
+    if (!supabase) {
+      setConfigured(false);
+      return;
+    }
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: row } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      const p = row as { full_name?: string; avatar_url?: string | null } | null;
+      const email = data.user.email ?? "";
+      setProfile({
+        name: p?.full_name || email.split("@")[0] || "vonscent гишүүн",
+        email,
+        avatar: p?.avatar_url ?? null,
+      });
+    });
+  }, []);
+
+  async function signOut() {
+    const supabase = createClient();
+    if (supabase) await supabase.auth.signOut();
+    setProfile(null);
+    router.push("/");
+    router.refresh();
+  }
+
+  const name = profile?.name ?? "Зочин";
+  const initial = (profile?.name || profile?.email || "?").charAt(0).toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Профайл цэс"
+          className="relative size-9 shrink-0 overflow-hidden rounded-full bg-secondary text-foreground transition-transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {profile?.avatar ? (
+            <Image
+              src={profile.avatar}
+              alt={name}
+              fill
+              sizes="36px"
+              className="object-cover"
+            />
+          ) : (
+            <span className="flex h-full items-center justify-center text-sm font-semibold">
+              {initial}
+            </span>
+          )}
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end">
+        {/* Header card — avatar + username, links to the profile page. */}
+        <DropdownMenuItem asChild className="gap-3 px-2.5 py-2">
+          <Link href="/account">
+            <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-secondary">
+              {profile?.avatar ? (
+                <Image
+                  src={profile.avatar}
+                  alt=""
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
+              ) : (
+                <span className="flex h-full items-center justify-center text-sm font-semibold">
+                  {initial}
+                </span>
+              )}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold">
+                {name}
+              </span>
+              {profile?.email && (
+                <span className="block truncate text-xs text-muted-foreground">
+                  {profile.email}
+                </span>
+              )}
+            </span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link href="/account/orders">
+            <Package /> Миний захиалга
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/faq">
+            <HelpCircle /> Түгээмэл асуулт
+          </Link>
+        </DropdownMenuItem>
+
+        {configured && profile && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={signOut}
+              className="text-red-400 focus:bg-red-500/10 focus:text-red-400 [&_svg]:text-red-400"
+            >
+              <LogOut /> Гарах
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

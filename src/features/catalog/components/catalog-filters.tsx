@@ -1,0 +1,241 @@
+"use client";
+
+import * as React from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/format";
+import { GENDERS, GENDER_LABEL, ML_SIZES } from "@/lib/constants";
+import { useFilterQuery } from "./use-filter-query";
+
+const PRICE_STEP = 1000;
+
+const FAMILIES: { value: string; label: string }[] = [
+  { value: "floral", label: "Цэцэгт" },
+  { value: "woody", label: "Модлог" },
+  { value: "fresh", label: "Сэргэг" },
+  { value: "oriental", label: "Дорнын" },
+  { value: "citrus", label: "Цитрус" },
+  { value: "spicy", label: "Халуун" },
+];
+
+const TAGS: { value: string; label: string }[] = [
+  { value: "new", label: "Шинэ" },
+  { value: "hot", label: "Эрэлттэй" },
+  { value: "sale", label: "Хямдрал" },
+];
+
+const SEASONS_F: { value: string; label: string }[] = [
+  { value: "spring", label: "Хавар" },
+  { value: "summer", label: "Зун" },
+  { value: "autumn", label: "Намар" },
+  { value: "winter", label: "Өвөл" },
+];
+
+function Group({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+/** Selectable filter chip — dark gray when off, light gray when selected. */
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "truncate rounded-full px-3 py-2 text-center text-sm font-medium transition-colors",
+        active
+          ? "bg-muted-foreground text-background"
+          : "bg-secondary text-foreground hover:bg-accent",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function CatalogFilters({
+  brands,
+  priceBounds,
+}: {
+  brands: string[];
+  priceBounds: { min: number; max: number };
+}) {
+  const { values, toggle, setMany, clearAll, activeCount, searchParams } =
+    useFilterQuery();
+
+  // Round bounds out to nice slider stops.
+  const domainMin = Math.floor(priceBounds.min / PRICE_STEP) * PRICE_STEP;
+  const domainMax = Math.ceil(priceBounds.max / PRICE_STEP) * PRICE_STEP;
+  const hasPriceRange = domainMax > domainMin;
+
+  const urlMin = Number(searchParams.get("minPrice")) || domainMin;
+  const urlMax = Number(searchParams.get("maxPrice")) || domainMax;
+  const [range, setRange] = React.useState<[number, number]>([urlMin, urlMax]);
+
+  // Sync the slider when the URL changes (e.g. clearing filters or browser nav).
+  React.useEffect(() => setRange([urlMin, urlMax]), [urlMin, urlMax]);
+
+  function commitRange([lo, hi]: number[]) {
+    setMany({
+      minPrice: lo <= domainMin ? undefined : String(lo),
+      maxPrice: hi >= domainMax ? undefined : String(hi),
+    });
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="font-serif text-lg font-semibold">Шүүлтүүр</h2>
+        {activeCount > 0 && (
+          <Button variant="ghost" size="sm" onClick={clearAll}>
+            Цэвэрлэх ({activeCount})
+          </Button>
+        )}
+      </div>
+
+      <Group title="Хүйс">
+        <div className="grid grid-cols-2 gap-2">
+          {GENDERS.map((g) => (
+            <Chip
+              key={g}
+              active={values("gender").includes(g)}
+              onClick={() => toggle("gender", g)}
+            >
+              {GENDER_LABEL[g]}
+            </Chip>
+          ))}
+        </div>
+      </Group>
+      <Separator />
+
+      <Group title="Үнэрийн төрөл">
+        <div className="grid grid-cols-2 gap-2">
+          {FAMILIES.map((f) => (
+            <Chip
+              key={f.value}
+              active={values("family").includes(f.value)}
+              onClick={() => toggle("family", f.value)}
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <Image
+                  src={`/family-${f.value}.png`}
+                  alt=""
+                  width={18}
+                  height={18}
+                  className="size-[18px] shrink-0 object-contain"
+                />
+                {f.label}
+              </span>
+            </Chip>
+          ))}
+        </div>
+      </Group>
+      <Separator />
+
+      <Group title="Улирал">
+        <div className="grid grid-cols-2 gap-2">
+          {SEASONS_F.map((s) => (
+            <Chip
+              key={s.value}
+              active={values("season").includes(s.value)}
+              onClick={() => toggle("season", s.value)}
+            >
+              {s.label}
+            </Chip>
+          ))}
+        </div>
+      </Group>
+      <Separator />
+
+      <Group title="Багц (ml)">
+        <div className="grid grid-cols-3 gap-2">
+          {ML_SIZES.map((ml) => (
+            <Chip
+              key={ml}
+              active={values("ml").includes(String(ml))}
+              onClick={() => toggle("ml", String(ml))}
+            >
+              {ml}ml
+            </Chip>
+          ))}
+        </div>
+      </Group>
+      <Separator />
+
+      <Group title="Таг">
+        <div className="grid grid-cols-3 gap-2">
+          {TAGS.map((t) => (
+            <Chip
+              key={t.value}
+              active={values("tags").includes(t.value)}
+              onClick={() => toggle("tags", t.value)}
+            >
+              {t.label}
+            </Chip>
+          ))}
+        </div>
+      </Group>
+      <Separator />
+
+      {hasPriceRange && (
+        <>
+          <Group title="Үнэ (₮)">
+            <div className="space-y-3 pt-1">
+              <Slider
+                min={domainMin}
+                max={domainMax}
+                step={PRICE_STEP}
+                value={range}
+                minStepsBetweenThumbs={1}
+                onValueChange={(v) => setRange([v[0], v[1]])}
+                onValueCommit={commitRange}
+              />
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{formatPrice(range[0])}</span>
+                <span>{formatPrice(range[1])}</span>
+              </div>
+            </div>
+          </Group>
+          <Separator />
+        </>
+      )}
+
+      <Group title="Брэнд">
+        <div className="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto pr-1">
+          {brands.map((b) => (
+            <Chip
+              key={b}
+              active={values("brand").includes(b)}
+              onClick={() => toggle("brand", b)}
+            >
+              {b}
+            </Chip>
+          ))}
+        </div>
+      </Group>
+    </div>
+  );
+}

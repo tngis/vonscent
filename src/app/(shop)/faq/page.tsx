@@ -1,0 +1,20 @@
+import type { Metadata } from "next";
+import { getFaqs } from "@/features/faq/api";
+import { FaqSearch } from "@/features/faq/components/faq-search";
+
+export const metadata: Metadata = {
+  title: "Түгээмэл асуулт",
+  description: "Захиалга, хүргэлт, төлбөр, бараатай холбоотой түгээмэл асуулт.",
+};
+
+export default async function FaqPage() {
+  const faqs = await getFaqs();
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16">
+      <h1 className="text-center font-serif text-4xl font-semibold tracking-tight">
+        Түгээмэл асуулт
+      </h1>
+      <FaqSearch items={faqs} />
+    </div>
+  );
+}

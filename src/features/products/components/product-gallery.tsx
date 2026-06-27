@@ -1,0 +1,120 @@
+"use client";
+
+import * as React from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import type { ProductImage } from "@/lib/types";
+
+export function ProductGallery({
+  images,
+  name,
+}: {
+  images: ProductImage[];
+  name: string;
+}) {
+  const [active, setActive] = React.useState(0);
+  const current = images[active] ?? images[0];
+  const scrollerRef = React.useRef<HTMLDivElement>(null);
+
+  // Track the active slide while swiping on mobile.
+  function onScroll(e: React.UIEvent<HTMLDivElement>) {
+    const el = e.currentTarget;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    if (idx !== active) setActive(idx);
+  }
+
+  function go(i: number) {
+    setActive(i);
+    const el = scrollerRef.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Mobile: full-bleed swipeable image carousel.
+          -mx-4 cancels the page's px-4; -mt-20 pulls the image up under the
+          transparent compact header (h-16 header + py-4 wrapper = 80px). */}
+      <div className="relative -mx-4 -mt-20 sm:hidden">
+        <div
+          ref={scrollerRef}
+          onScroll={onScroll}
+          className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto"
+        >
+          {images.map((img, i) => (
+            <div
+              key={i}
+              className="relative aspect-[4/5] w-full shrink-0 snap-center bg-muted"
+            >
+              <Image
+                src={img.url}
+                alt={img.alt || `${name} ${i + 1}`}
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+        {images.length > 1 && (
+          <div className="absolute bottom-14 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-secondary/70 px-2.5 py-1.5 backdrop-blur">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => go(i)}
+                aria-label={`Зураг ${i + 1}`}
+                className={cn(
+                  "h-1.5 rounded-full transition-all",
+                  i === active
+                    ? "w-6 bg-foreground"
+                    : "w-1.5 bg-muted-foreground/60",
+                )}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop: main image + thumbnails */}
+      <div className="hidden sm:block">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border bg-muted shadow-soft">
+          {current && (
+            <Image
+              src={current.url}
+              alt={current.alt || name}
+              fill
+              priority
+              sizes="50vw"
+              className="object-cover"
+            />
+          )}
+        </div>
+        {images.length > 1 && (
+          <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setActive(i)}
+                className={cn(
+                  "relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted transition-all",
+                  i === active
+                    ? "ring-2 ring-foreground"
+                    : "opacity-60 hover:opacity-100",
+                )}
+                aria-label={`Зураг ${i + 1}`}
+              >
+                <Image
+                  src={img.url}
+                  alt={img.alt || `${name} ${i + 1}`}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

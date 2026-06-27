@@ -1,0 +1,157 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { PopupSettings, PopupSlide } from "@/features/content/api";
+
+const STORAGE_KEY = "vonscent-popup-dismissed";
+const AUTOPLAY_MS = 5000;
+
+/** True when `now` falls within the slide's optional [startsAt, endsAt] window. */
+function isLive(slide: PopupSlide, now: number): boolean {
+  if (slide.startsAt && now < new Date(slide.startsAt).getTime()) return false;
+  if (slide.endsAt && now > new Date(slide.endsAt).getTime()) return false;
+  return true;
+}
+
+/**
+ * Marketing popup carousel (admin A8). Shows scheduled slides once per
+ * `frequencyHours` window. Auto-advances; pauses on manual swipe/drag, then
+ * resumes. Closable.
+ */
+export function PromoPopup({ settings }: { settings: PopupSettings }) {
+  const [open, setOpen] = React.useState(false);
+  const [index, setIndex] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
+  const [slides, setSlides] = React.useState<PopupSlide[]>([]);
+  const dragX = React.useRef<number | null>(null);
+
+  // Filter to slides whose schedule is live now, then decide whether to show.
+  React.useEffect(() => {
+    const now = Date.now();
+    const live = (settings.slides ?? []).filter((s) => s.title && isLive(s, now));
+    setSlides(live);
+    if (!settings.enabled || live.length === 0) return;
+    const last = Number(localStorage.getItem(STORAGE_KEY) ?? 0);
+    if ((now - last) / 36e5 < settings.frequencyHours) return;
+    const t = setTimeout(() => setOpen(true), 1200);
+    return () => clearTimeout(t);
+  }, [settings.enabled, settings.frequencyHours, settings.slides]);
+
+  // Autoplay.
+  React.useEffect(() => {
+    if (!open || paused || slides.length < 2) return;
+    const t = setInterval(
+      () => setIndex((i) => (i + 1) % slides.length),
+      AUTOPLAY_MS,
+    );
+    return () => clearInterval(t);
+  }, [open, paused, slides.length]);
+
+  function dismiss() {
+    localStorage.setItem(STORAGE_KEY, String(Date.now()));
+    setOpen(false);
+  }
+  const go = React.useCallback(
+    (dir: number) => {
+      setPaused(true);
+      setIndex((i) => (i + dir + slides.length) % slides.length);
+    },
+    [slides.length],
+  );
+
+  if (!open || slides.length === 0) return null;
+  const slide = slides[index];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4"
+      onClick={dismiss}
+    >
+      <div
+        className="relative w-full max-w-md overflow-hidden rounded-xl bg-card shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => {
+          dragX.current = e.clientX;
+        }}
+        onPointerUp={(e) => {
+          if (dragX.current == null) return;
+          const dx = e.clientX - dragX.current;
+          dragX.current = null;
+          if (Math.abs(dx) > 40 && slides.length > 1) go(dx < 0 ? 1 : -1);
+        }}
+      >
+        <button
+          onClick={dismiss}
+          aria-label="Хаах"
+          className="absolute right-3 top-3 z-10 rounded-md bg-background/70 p-1 text-muted-foreground hover:bg-accent"
+        >
+          <X className="size-4" />
+        </button>
+
+        {slide.imageUrl && (
+          <div className="relative aspect-[16/10] w-full bg-secondary">
+            <Image
+              src={slide.imageUrl}
+              alt={slide.title}
+              fill
+              sizes="448px"
+              className="object-cover"
+            />
+          </div>
+        )}
+
+        <div className="space-y-3 p-8 text-center">
+          <h2 className="font-serif text-2xl font-semibold">{slide.title}</h2>
+          {slide.body && (
+            <p className="text-sm text-muted-foreground">{slide.body}</p>
+          )}
+          {slide.ctaLabel && (
+            <Button asChild className="mt-2" onClick={dismiss}>
+              <Link href={slide.ctaHref || "/catalog"}>{slide.ctaLabel}</Link>
+            </Button>
+          )}
+        </div>
+
+        {slides.length > 1 && (
+          <>
+            <button
+              onClick={() => go(-1)}
+              aria-label="Өмнөх"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 p-1.5 hover:bg-accent"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <button
+              onClick={() => go(1)}
+              aria-label="Дараах"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/70 p-1.5 hover:bg-accent"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+            <div className="flex justify-center gap-1.5 pb-4">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setPaused(true);
+                    setIndex(i);
+                  }}
+                  aria-label={`${i + 1}`}
+                  className={cn(
+                    "size-1.5 rounded-full transition-colors",
+                    i === index ? "bg-primary" : "bg-border",
+                  )}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

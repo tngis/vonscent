@@ -1,0 +1,311 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * vonscent — three switchable themes (next-themes, attribute="class"):
+ *   .black — default dark monochrome (black bg, white text)
+ *   .white — light monochrome (white bg, near-black text)
+ *   .pink  — soft pink palette
+ * The default (:root) mirrors .black to avoid a flash before hydration.
+ */
+:root,
+.black {
+  --background: #000000; /* black */
+  --foreground: #ffffff; /* white */
+
+  --card: #0e0e0e; /* gray card */
+  --card-foreground: #ffffff;
+
+  --popover: #161616;
+  --popover-foreground: #ffffff;
+
+  /* gray button */
+  --primary: #262626;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1c1c1c;
+  --secondary-foreground: #ffffff;
+
+  --muted: #141414;
+  --muted-foreground: #a1a1a1; /* gray */
+
+  --accent: #242424;
+  --accent-foreground: #ffffff;
+
+  /* accent neutralized to grayscale — no color anywhere */
+  --gold: #d4d4d4;
+  --gold-soft: #a1a1a1;
+  --gold-strong: #ffffff;
+
+  --destructive: #2a2a2a;
+  --destructive-foreground: #ffffff;
+  --success: #d4d4d4;
+  --warning: #d4d4d4;
+
+  /* no borders */
+  --border: transparent;
+  --input: transparent;
+  --ring: #5a5a5a;
+
+  --surface-deep: #000000;
+
+  --radius: 0.75rem;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 8px 30px -12px rgba(0, 0, 0, 0.7);
+  --shadow-gold: none;
+}
+
+/* ── White (light monochrome) ─────────────────────────────────────────── */
+.white {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+
+  --card: #fafafa;
+  --card-foreground: #0a0a0a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+
+  --primary: #171717; /* dark CTA on light bg */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f0f0f0;
+  --secondary-foreground: #0a0a0a;
+
+  --muted: #f4f4f4;
+  --muted-foreground: #6b6b6b;
+
+  --accent: #e8e8e8;
+  --accent-foreground: #0a0a0a;
+
+  --gold: #6b6b6b;
+  --gold-soft: #8a8a8a;
+  --gold-strong: #171717;
+
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --success: #4b5563;
+  --warning: #4b5563;
+
+  --border: transparent;
+  --input: transparent;
+  --ring: #a3a3a3;
+
+  --surface-deep: #f4f4f4;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-lift: 0 8px 30px -12px rgba(0, 0, 0, 0.18);
+  --shadow-gold: none;
+}
+
+/* ── Pink ─────────────────────────────────────────────────────────────── */
+.pink {
+  --background: #fff5f8;
+  --foreground: #3d1f2b;
+
+  --card: #ffe9f0;
+  --card-foreground: #3d1f2b;
+
+  --popover: #fff5f8;
+  --popover-foreground: #3d1f2b;
+
+  --primary: #e84a7f; /* vibrant pink CTA */
+  --primary-foreground: #ffffff;
+
+  --secondary: #ffd9e5;
+  --secondary-foreground: #3d1f2b;
+
+  --muted: #ffe2ec;
+  --muted-foreground: #a05c74;
+
+  --accent: #ffccdb;
+  --accent-foreground: #3d1f2b;
+
+  --gold: #d36b8c;
+  --gold-soft: #c98aa0;
+  --gold-strong: #e84a7f;
+
+  --destructive: #d6336c;
+  --destructive-foreground: #ffffff;
+  --success: #c98aa0;
+  --warning: #c98aa0;
+
+  --border: transparent;
+  --input: transparent;
+  --ring: #f48fb1;
+
+  --surface-deep: #ffe0ea;
+
+  --shadow-soft: 0 1px 2px rgba(157, 23, 77, 0.1);
+  --shadow-lift: 0 8px 30px -12px rgba(157, 23, 77, 0.25);
+  --shadow-gold: none;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-strong: var(--gold-strong);
+  --color-surface-deep: var(--surface-deep);
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-gold: var(--shadow-gold);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-sans);
+  /* single minimalist font everywhere — serif utilities resolve to sans */
+  --font-serif: var(--font-sans);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ---- Custom utilities (luxury helpers) ---- */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Thin neutral hairline divider used sparingly */
+@utility gold-rule {
+  height: 1px;
+  width: 100%;
+  background: color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+/* Brand wall logos: dark artwork by default (shows on the light themes);
+   inverted to white on the black theme. */
+.brand-logo {
+  filter: none;
+}
+.black .brand-logo {
+  filter: brightness(0) invert(1);
+}
+
+/* Frosted-glass surface for floating chrome (header, bottom nav) */
+@utility glass {
+  background-color: color-mix(in oklab, var(--background) 72%, transparent);
+  backdrop-filter: saturate(1.4) blur(16px);
+  -webkit-backdrop-filter: saturate(1.4) blur(16px);
+}
+
+/* Safe-area aware bottom padding for mobile app chrome */
+@utility pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+@utility h-safe-nav {
+  height: calc(4rem + env(safe-area-inset-bottom));
+}
+
+@layer base {
+  /* No borders anywhere — every border collapses to transparent. */
+  *,
+  *::before,
+  *::after {
+    border-color: transparent !important;
+  }
+  body {
+    position: relative;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  .font-serif {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background-color: #333333;
+    color: #ffffff;
+  }
+  /* Respect reduced motion (design.md §7) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

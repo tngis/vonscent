@@ -1,0 +1,341 @@
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Sparkles,
+  ShieldCheck,
+  Truck,
+  BadgeCheck,
+  Instagram,
+  ArrowRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SiteFooter } from "@/components/shared/site-footer";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { Stars } from "@/components/shared/stars";
+import { ProductCarousel } from "@/features/products/components/product-carousel";
+import { BrandMarquee } from "@/features/products/components/brand-marquee";
+import {
+  getNewArrivals,
+  getBestSellers,
+  getOnSale,
+  getBrands,
+} from "@/features/products/api";
+import { getRecentReviews } from "@/features/reviews/api";
+import { getPopupSettings, getSocialSettings } from "@/features/content/api";
+import { PromoPopup } from "@/features/marketing/components/promo-popup";
+import { GENDERS, GENDER_LABEL } from "@/lib/constants";
+
+const FAMILIES: { slug: string; label: string }[] = [
+  { slug: "floral", label: "Цэцэгт (Floral)" },
+  { slug: "woody", label: "Модлог (Woody)" },
+  { slug: "fresh", label: "Сэргэг (Fresh)" },
+  { slug: "oriental", label: "Дорнын (Oriental)" },
+  { slug: "citrus", label: "Цитрус" },
+  { slug: "spicy", label: "Халуун (Spicy)" },
+];
+
+const TRUST = [
+  { icon: BadgeCheck, title: "100% жинхэнэ", desc: "Албан ёсны эх сурвалж" },
+  { icon: Sparkles, title: "5/10/20ml", desc: "Туршиж сонгох багц" },
+  { icon: Truck, title: "Шуурхай хүргэлт", desc: "Хотод 24 цагт" },
+  { icon: ShieldCheck, title: "Аюулгүй төлбөр", desc: "QPay & банк" },
+];
+
+export default async function HomePage() {
+  const [newArrivals, bestSellers, onSale, brands, reviews, popup, social] =
+    await Promise.all([
+      getNewArrivals(8),
+      getBestSellers(8),
+      getOnSale(4),
+      getBrands(),
+      getRecentReviews(3),
+      getPopupSettings(),
+      getSocialSettings(),
+    ]);
+
+  return (
+    <>
+      <PromoPopup settings={popup} />
+      {/* Hero — responsive art direction: 1:1 on phones, 21:9 on larger screens.
+          Pulled up under the floating header (pt-4 16px + h-14 pill = 72px) so
+          the image reaches the very top and shows behind the translucent pill. */}
+      <section className="relative -mt-[72px] aspect-square w-full overflow-hidden bg-black sm:aspect-[21/9]">
+        <Image
+          src="/hero-mobile.jpg"
+          alt="VON SCENT"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover sm:hidden"
+        />
+        <Image
+          src="/hero-desktop.jpg"
+          alt="VON SCENT"
+          fill
+          priority
+          sizes="100vw"
+          className="hidden object-cover sm:block"
+        />
+      </section>
+
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:space-y-16 sm:py-14">
+      {/* Trust */}
+      <section className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-4">
+        {TRUST.map((t) => (
+          <div
+            key={t.title}
+            className="flex items-center gap-3 bg-card p-5"
+          >
+            <t.icon className="size-6 shrink-0 text-gold-strong" />
+            <div>
+              <p className="text-sm font-medium">{t.title}</p>
+              <p className="text-xs text-muted-foreground">{t.desc}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* New arrivals */}
+      <section>
+        <SectionHeading
+          title="Шинээр буусан"
+          href="/catalog?tags=new"
+        />
+        <ProductCarousel products={newArrivals} />
+      </section>
+
+      {/* Best sellers */}
+      <section>
+        <SectionHeading
+          title="Эрэлттэй"
+          href="/catalog?tags=hot"
+        />
+        <ProductCarousel products={bestSellers} />
+      </section>
+
+      {/* Shop by gender */}
+      <section>
+        <SectionHeading title="Хүйсээр" />
+        <div className="grid grid-cols-3 gap-4">
+          {GENDERS.map((g, i) => (
+            <Link
+              key={g}
+              href={`/catalog?gender=${g}`}
+              className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-2xl bg-secondary p-5 transition-all hover:-translate-y-1 hover:shadow-lift sm:aspect-[3/2]"
+            >
+              <Image
+                src={`/gender-${g}.png`}
+                alt={GENDER_LABEL[g]}
+                fill
+                sizes="(max-width: 640px) 33vw, 360px"
+                className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
+              <span className="absolute right-4 top-4 z-10 font-serif text-3xl text-white/40">
+                0{i + 1}
+              </span>
+              <span className="relative z-10 font-serif text-lg font-medium sm:text-xl">
+                {GENDER_LABEL[g]}
+              </span>
+              <span className="relative z-10 mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                Үзэх <ArrowRight className="size-3" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Shop by season */}
+      <section>
+        <SectionHeading title="Улирлаар" />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {[
+            { slug: "spring", label: "Хавар" },
+            { slug: "summer", label: "Зун" },
+            { slug: "autumn", label: "Намар" },
+            { slug: "winter", label: "Өвөл" },
+          ].map((s) => (
+            <Link
+              key={s.slug}
+              href={`/catalog?season=${s.slug}`}
+              className="group relative flex aspect-3/2 items-end overflow-hidden rounded-2xl bg-secondary p-4 transition-all hover:-translate-y-1 hover:shadow-lift"
+            >
+              <Image
+                src={`/season-${s.slug}.jpg`}
+                alt={s.label}
+                fill
+                sizes="(max-width: 640px) 50vw, 280px"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+              <span className="relative z-10 font-serif text-lg font-medium text-white">
+                {s.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Shop by scent family */}
+      <section>
+        <SectionHeading title="Үнэрийн төрлөөр" />
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+          {FAMILIES.map((f) => (
+            <Link
+              key={f.slug}
+              href={`/catalog?family=${f.slug}`}
+              className="group flex flex-col items-center gap-2 rounded-xl bg-card p-4 text-center text-xs font-medium transition-all hover:-translate-y-1 hover:bg-accent hover:shadow-soft"
+            >
+              <div className="relative size-16 transition-transform duration-500 group-hover:scale-105">
+                <Image
+                  src={`/family-${f.slug}.png`}
+                  alt={f.label}
+                  fill
+                  sizes="64px"
+                  className="object-contain"
+                />
+              </div>
+              {f.label}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Brands */}
+      <section>
+        <SectionHeading title="Брэндээр" href="/catalog" />
+        <BrandMarquee brands={brands} />
+      </section>
+
+      {/* Sample CTA */}
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-surface-deep px-6 py-12 shadow-lift sm:px-12 sm:py-16">
+        <div className="pointer-events-none absolute inset-4 rounded-xl border border-gold-strong/20" />
+        <div className="relative max-w-lg space-y-4">
+          <span className="text-xs uppercase tracking-[0.3em] text-gold">
+            ✦ Sample багц
+          </span>
+          <h2 className="font-serif text-3xl font-semibold sm:text-4xl">
+            Sample-аар туршиж эхлээрэй
+          </h2>
+          <p className="text-muted-foreground">
+            Аль үнэр тань илүү таалагдахаа мэдэхгүй байна уу? 5мл багцаар хэд
+            хэдийг туршаад дуртайгаа сонгоорой.
+          </p>
+          <Button asChild size="lg">
+            <Link href="/catalog">Sample сонгох</Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* On sale */}
+      {onSale.length > 0 && (
+        <section>
+          <SectionHeading
+            title="Онцгой санал"
+            subtitle="Хямдралтай үнэртнүүд"
+            href="/catalog?tags=sale"
+          />
+          <ProductCarousel products={onSale} />
+        </section>
+      )}
+
+      {/* Brand intro */}
+      <section className="grid items-center gap-8 rounded-xl border border-border p-8 md:grid-cols-2 md:p-12">
+        <div className="space-y-4">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Бидний тухай
+          </p>
+          <h2 className="font-serif text-3xl font-semibold">
+            Үнэр бол хувийн илэрхийлэл
+          </h2>
+          <p className="text-muted-foreground">
+            vonscent нь дэлхийн шилдэг үнэртнүүдийг жижиг (decant) багцаар санал
+            болгодог. Бүтэн сав авахаасаа өмнө өөрт тань яг тохирохыг туршиж
+            олох боломжийг бид олгоно.
+          </p>
+          <Button asChild variant="outline">
+            <Link href="/about">Дэлгэрэнгүй</Link>
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { v: "100%", l: "Жинхэнэ бараа" },
+            { v: "5/10/20ml", l: "Туршиж сонгох" },
+            { v: "24ц", l: "Хотод хүргэлт" },
+            { v: "QPay", l: "Аюулгүй төлбөр" },
+          ].map((s) => (
+            <div
+              key={s.l}
+              className="rounded-lg border border-border bg-secondary p-5 text-center"
+            >
+              <p className="font-serif text-2xl font-semibold">{s.v}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{s.l}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Reviews */}
+      {reviews.length > 0 && (
+        <section>
+          <SectionHeading
+            title="Хэрэглэгчдийн сэтгэгдэл"
+            subtitle="Бодит худалдан авагчдын үнэлгээ"
+          />
+          <div className="grid gap-5 md:grid-cols-3">
+            {reviews.map((r) => (
+              <div
+                key={r.id}
+                className="flex flex-col gap-3 rounded-lg border border-border p-5"
+              >
+                <Stars rating={r.rating} size={15} />
+                <p className="text-sm text-foreground/90 line-clamp-4">
+                  {r.body || "Сайхан үнэр!"}
+                </p>
+                <div className="mt-auto text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {r.authorName}
+                  </span>
+                  {r.productName && (
+                    <>
+                      {" · "}
+                      <Link
+                        href={`/products/${r.productSlug}`}
+                        className="hover:text-primary"
+                      >
+                        {r.brand} {r.productName}
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Instagram / social */}
+      {social.instagram && (
+        <section>
+          <SectionHeading title="Instagram" subtitle="@vonscent.mn" />
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <a
+                key={i}
+                href={social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-border bg-secondary text-muted-foreground transition-colors hover:text-primary"
+              >
+                <Instagram className="size-6 transition-transform group-hover:scale-110" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+      </div>
+
+      <SiteFooter />
+    </>
+  );
+}

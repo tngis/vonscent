@@ -1,0 +1,94 @@
+"use client";
+
+import * as React from "react";
+import { SlidersHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { CatalogFilters } from "./catalog-filters";
+import { useFilterQuery } from "./use-filter-query";
+
+/**
+ * Mobile filter sheet — slides down from the top, full width with a rounded
+ * bottom and a bottom gap. The grab handle at the bottom can be dragged up to
+ * dismiss.
+ */
+export function CatalogFilterSheet({
+  brands,
+  priceBounds,
+}: {
+  brands: string[];
+  priceBounds: { min: number; max: number };
+}) {
+  const { activeCount } = useFilterQuery();
+  const [open, setOpen] = React.useState(false);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const startY = React.useRef<number | null>(null);
+
+  function onPointerDown(e: React.PointerEvent) {
+    startY.current = e.clientY;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    if (contentRef.current) contentRef.current.style.transition = "none";
+  }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (startY.current === null || !contentRef.current) return;
+    const dy = Math.min(0, e.clientY - startY.current); // only allow dragging up
+    contentRef.current.style.transform = `translateY(${dy}px)`;
+  }
+
+  function endDrag(e: React.PointerEvent) {
+    if (startY.current === null || !contentRef.current) return;
+    const dy = e.clientY - startY.current;
+    startY.current = null;
+    contentRef.current.style.transition = "";
+    contentRef.current.style.transform = "";
+    if (dy < -60) setOpen(false);
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="secondary"
+          size="icon"
+          className="relative shrink-0 lg:hidden"
+          aria-label="Шүүлтүүр"
+        >
+          <SlidersHorizontal className="size-4" />
+          {activeCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background">
+              {activeCount}
+            </span>
+          )}
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        ref={contentRef}
+        side="top"
+        overlayClassName="bg-black/10"
+        className="flex max-h-[88vh] flex-col gap-4 rounded-b-2xl border-border bg-card/60 pb-3 backdrop-blur-xl lg:hidden"
+      >
+        <SheetTitle className="sr-only">Шүүлтүүр</SheetTitle>
+        <div className="-mx-2 flex-1 overflow-y-auto px-2">
+          <CatalogFilters brands={brands} priceBounds={priceBounds} />
+        </div>
+        <button
+          type="button"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          aria-label="Хаах"
+          className="flex w-full touch-none items-center justify-center pt-2"
+        >
+          <span className="h-1.5 w-12 rounded-full bg-muted-foreground/40" />
+        </button>
+      </SheetContent>
+    </Sheet>
+  );
+}
