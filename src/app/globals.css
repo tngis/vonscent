@@ -256,6 +256,32 @@
 .black .brand-logo {
   filter: brightness(0) invert(1);
 }
+/* Inside a selected filter chip the background flips, so the logo must too. */
+[aria-pressed="true"] .brand-logo {
+  filter: brightness(0) invert(1);
+}
+.black [aria-pressed="true"] .brand-logo {
+  filter: none;
+}
+
+/* Sticky offset for page content that sits under the auto-hiding header:
+   clears the header when it's visible, shrinks to a small gap when it's away.
+   site-header toggles data-header-hidden on <html>. */
+:root {
+  --header-offset: 6rem;
+}
+[data-header-hidden="true"] {
+  --header-offset: 1.5rem;
+}
+
+/* Scrollable but with the scrollbar hidden (mobile filter sheet). */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
 /* Frosted-glass surface for floating chrome (header, bottom nav) */
 @utility glass {

@@ -15,12 +15,13 @@ import type {
   OrderStatusHistoryRow,
 } from "@/db/types";
 
-const STATUS_VARIANT: Record<OrderStatus, "secondary" | "new" | "sale"> = {
-  pending: "secondary",
-  confirmed: "new",
-  shipping: "new",
-  delivered: "new",
-  cancelled: "sale",
+/** Distinct chip colour per status (overrides the Badge variant via twMerge). */
+const STATUS_STYLE: Record<OrderStatus, string> = {
+  pending: "bg-amber-500/15 text-amber-500",
+  confirmed: "bg-sky-500/15 text-sky-500",
+  shipping: "bg-violet-500/15 text-violet-400",
+  delivered: "bg-emerald-500/15 text-emerald-500",
+  cancelled: "bg-red-500/20 text-red-400",
 };
 
 export default async function OrderDetailPage({
@@ -81,7 +82,7 @@ export default async function OrderDetailPage({
     <div className="space-y-6">
       <Link
         href="/account/orders"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="hidden items-center gap-1 text-sm text-muted-foreground hover:text-foreground md:inline-flex"
       >
         <ArrowLeft className="size-4" /> Захиалгууд руу буцах
       </Link>
@@ -93,7 +94,7 @@ export default async function OrderDetailPage({
             {formatDate(order.created_at)}
           </p>
         </div>
-        <Badge variant={STATUS_VARIANT[order.status]}>
+        <Badge className={STATUS_STYLE[order.status]}>
           {ORDER_STATUS_LABEL[order.status]}
         </Badge>
       </div>

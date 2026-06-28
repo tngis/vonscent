@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Minus, Plus, ShoppingBag, Check } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/format";
@@ -59,6 +59,12 @@ export function ProductPurchase({ product }: { product: ProductDetail }) {
           </span>
         )}
       </div>
+
+      {product.description && (
+        <p className="text-sm leading-relaxed text-foreground/80">
+          {product.description}
+        </p>
+      )}
 
       <div className="space-y-3">
         <p className="text-sm font-medium">Хэмжээ сонгох</p>
@@ -119,7 +125,7 @@ export function ProductPurchase({ product }: { product: ProductDetail }) {
 
         <Button
           size="lg"
-          className="flex-1"
+          className="flex-1 [.black_&]:bg-white [.black_&]:text-black [.black_&]:hover:bg-white/90"
           disabled={soldOut || !selected}
           onClick={onAdd}
         >
@@ -131,7 +137,7 @@ export function ProductPurchase({ product }: { product: ProductDetail }) {
             "Дууссан"
           ) : (
             <>
-              <ShoppingBag className="size-4" /> Сагсанд нэмэх
+              <ShoppingCart className="size-4" /> Сагсанд нэмэх
             </>
           )}
         </Button>

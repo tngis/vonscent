@@ -264,6 +264,16 @@ export async function getProductsByIds(
   return all.filter((p) => set.has(p.id)).map(toListItem);
 }
 
+/** Full detail shape (with variants) for several ids — used by bulk actions. */
+export async function getProductDetailsByIds(
+  ids: string[],
+): Promise<ProductDetail[]> {
+  if (!ids.length) return [];
+  const all = await fetchProducts();
+  const set = new Set(ids);
+  return all.filter((p) => set.has(p.id));
+}
+
 export async function getRelated(
   slug: string,
   limit = 4,

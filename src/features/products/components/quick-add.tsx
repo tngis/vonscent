@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { ShoppingCart, ShoppingBag, Minus, Plus, Check } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Check } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -197,7 +197,7 @@ export function QuickAdd({
               "Дууссан"
             ) : (
               <>
-                <ShoppingBag className="size-4" /> Сагслах
+                <ShoppingCart className="size-4" /> Сагслах
               </>
             )}
           </Button>

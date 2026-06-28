@@ -30,7 +30,7 @@ export default async function CatalogPage({
   ]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <div className="mx-auto max-w-[88rem] px-4 md:px-8 py-8">
       {/* <div className="mb-6">
         <h1 className="font-serif text-3xl font-semibold tracking-tight">
           {filters.search ? `«${filters.search}» хайлтын үр дүн` : "Каталог"}
@@ -51,7 +51,7 @@ export default async function CatalogPage({
 
       <div className="mt-6 flex gap-10 lg:mt-8">
         {/* Desktop sidebar: search above the filter, sharing its width */}
-        <aside className="hidden w-80 shrink-0 lg:block">
+        <aside className="hidden w-96 shrink-0 lg:block">
           <CatalogSearch className="mb-6" />
           <CatalogFilters brands={brands} priceBounds={priceBounds} />
         </aside>

@@ -1,9 +1,31 @@
+import Image from "next/image";
 import { Stars } from "@/components/shared/stars";
 import { formatDate } from "@/lib/format";
 import { getProductReviews } from "@/features/reviews/api";
 import { createClient } from "@/lib/supabase/server";
 import { ReviewForm } from "./review-form";
 import { DeleteReviewButton } from "./delete-review-button";
+
+/** Round avatar — photo when available, otherwise the author's initial. */
+function Avatar({ name, src }: { name: string; src: string | null }) {
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt={name}
+        width={40}
+        height={40}
+        unoptimized
+        className="size-10 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent text-sm font-semibold uppercase text-foreground">
+      {name.trim().charAt(0) || "?"}
+    </span>
+  );
+}
 
 /**
  * Server-rendered reviews block for the product page: rating summary, the
@@ -25,7 +47,7 @@ export async function ReviewSection({
     : null;
 
   return (
-    <section className="mt-16">
+    <section>
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <h2 className="font-serif text-xl font-semibold">Үнэлгээ ба сэтгэгдэл</h2>
         {ratingCount > 0 && (
@@ -46,22 +68,37 @@ export async function ReviewSection({
             </p>
           ) : (
             reviews.map((r) => (
-              <div key={r.id} className="border-b border-border pb-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{r.authorName}</span>
-                  <span className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(r.createdAt)}
-                    </span>
-                    {currentUserId === r.userId && (
-                      <DeleteReviewButton reviewId={r.id} productId={productId} />
+              <div
+                key={r.id}
+                className="rounded-2xl border border-border bg-card/40 p-5 transition-colors hover:border-foreground/20"
+              >
+                <div className="flex items-start gap-3">
+                  <Avatar name={r.authorName} src={r.authorAvatar} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold leading-tight">
+                          {r.authorName}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {formatDate(r.createdAt)}
+                        </p>
+                      </div>
+                      {currentUserId === r.userId && (
+                        <DeleteReviewButton
+                          reviewId={r.id}
+                          productId={productId}
+                        />
+                      )}
+                    </div>
+                    <Stars rating={r.rating} size={14} className="mt-2" />
+                    {r.body && (
+                      <p className="mt-3 text-sm leading-relaxed text-foreground/90">
+                        {r.body}
+                      </p>
                     )}
-                  </span>
+                  </div>
                 </div>
-                <Stars rating={r.rating} size={14} className="mt-1" />
-                {r.body && (
-                  <p className="mt-2 text-sm text-foreground/90">{r.body}</p>
-                )}
               </div>
             ))
           )}

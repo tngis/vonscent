@@ -304,7 +304,7 @@ function OptionRow({
     <>
       <span
         className={`flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full ${
-          image ? "bg-black" : "bg-secondary"
+          image ? "bg-transparent" : "bg-secondary"
         }`}
       >
         {image ? (

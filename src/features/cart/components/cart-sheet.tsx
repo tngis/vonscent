@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -64,7 +64,7 @@ export function CartSheet({
 
         {!mounted || items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <ShoppingBag className="size-10 text-muted-foreground" />
+            <ShoppingCart className="size-10 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">Сагс хоосон байна.</p>
             <SheetClose asChild>
               <Button asChild variant="outline">

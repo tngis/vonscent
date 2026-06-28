@@ -29,7 +29,7 @@ export default async function BlogPostPage({
   const related = await getRelatedPosts(slug, 2);
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12">
+    <article className="mx-auto max-w-3xl px-4 md:px-8 py-12">
       <nav className="mb-6 text-sm text-muted-foreground">
         <Link href="/blog" className="hover:text-foreground">
           Блог

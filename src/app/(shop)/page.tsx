@@ -78,7 +78,7 @@ export default async function HomePage() {
         />
       </section>
 
-      <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:space-y-16 sm:py-14">
+      <div className="mx-auto max-w-[88rem] space-y-10 px-4 md:px-8 py-8 sm:space-y-16 sm:py-14">
       {/* Trust */}
       <section className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-4">
         {TRUST.map((t) => (

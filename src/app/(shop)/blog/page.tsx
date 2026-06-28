@@ -14,7 +14,7 @@ export default async function BlogPage() {
   const posts = await getBlogPosts();
   const [featured, ...rest] = posts;
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12">
+    <div className="mx-auto max-w-[88rem] px-4 md:px-8 py-12">
       <h1 className="font-serif text-4xl font-semibold tracking-tight">Блог</h1>
       <p className="mt-2 text-muted-foreground">
         Үнэр сонгох гарын авлага, зөвлөмж, түүх.

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { createClient } from "@/lib/supabase/browser";
 import type { AddressRow } from "@/db/types";
 
@@ -25,6 +26,9 @@ export function AddressBook() {
   const [form, setForm] = React.useState(EMPTY);
   const [showForm, setShowForm] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = React.useState<string | null>(
+    null,
+  );
 
   const load = React.useCallback(async () => {
     const supabase = createClient();
@@ -130,7 +134,7 @@ export function AddressBook() {
                     </button>
                   )}
                   <button
-                    onClick={() => remove(a.id)}
+                    onClick={() => setPendingDeleteId(a.id)}
                     className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
                     aria-label="Устгах"
                   >
@@ -192,21 +196,45 @@ export function AddressBook() {
                   required
                 />
               </div>
-              <Button type="submit" disabled={saving}>
-                Хадгалах
-              </Button>
+              <div className="flex justify-end gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={saving}
+                  onClick={() => setShowForm(false)}
+                >
+                  Болих
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  Хадгалах
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
       )}
 
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={() => setShowForm((s) => !s)}
-      >
-        <Plus className="size-4" /> {showForm ? "Болих" : "Шинэ хаяг нэмэх"}
-      </Button>
+      {!showForm && (
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => setShowForm(true)}
+        >
+          <Plus className="size-4" /> Шинэ хаяг нэмэх
+        </Button>
+      )}
+
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => !open && setPendingDeleteId(null)}
+        title="Хаягаа устгах уу?"
+        description="Энэ үйлдлийг буцаах боломжгүй."
+        confirmLabel="Устгах"
+        destructive
+        onConfirm={async () => {
+          if (pendingDeleteId) await remove(pendingDeleteId);
+        }}
+      />
     </section>
   );
 }

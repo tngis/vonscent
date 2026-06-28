@@ -34,7 +34,7 @@ const VALUES = [
 export default async function AboutPage() {
   const about = await getAboutSettings();
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <div className="mx-auto max-w-4xl px-4 md:px-8 py-16">
       <div className="text-center">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Бидний тухай

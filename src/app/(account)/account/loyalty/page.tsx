@@ -57,7 +57,7 @@ export default function LoyaltyHistoryPage() {
       {/* Balance */}
       <Card>
         <CardContent className="flex items-center gap-4 p-6">
-          <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black">
+          <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full">
             <Image
               src="/v-point.png"
               alt=""

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
+    <div className="mx-auto max-w-5xl px-4 md:px-8 py-16">
       <h1 className="font-serif text-4xl font-semibold tracking-tight">
         Холбоо барих
       </h1>

@@ -62,11 +62,11 @@ export default function OrderSuccessPage() {
     }
   }
 
-  if (!loaded) return <div className="mx-auto max-w-xl px-4 py-24" />;
+  if (!loaded) return <div className="mx-auto max-w-xl px-4 md:px-8 py-24" />;
 
   if (!order) {
     return (
-      <div className="mx-auto max-w-xl px-4 py-24 text-center">
+      <div className="mx-auto max-w-xl px-4 md:px-8 py-24 text-center">
         <h1 className="font-serif text-2xl font-semibold">
           Захиалга олдсонгүй
         </h1>
@@ -82,7 +82,7 @@ export default function OrderSuccessPage() {
   const showQpayInvoice = order.paymentMethod === "qpay" && qpay;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-16">
+    <div className="mx-auto max-w-xl px-4 md:px-8 py-16">
       <div className="flex flex-col items-center gap-3 text-center">
         <CheckCircle2 className="size-14 text-success" />
         <h1 className="font-serif text-3xl font-semibold">

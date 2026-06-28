@@ -11,7 +11,7 @@ import {
   Truck,
   Sparkles,
   ShieldCheck,
-  ShoppingBag,
+  ShoppingCart,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -143,9 +143,9 @@ export default function CheckoutPage() {
 
   if (mounted && items.length === 0) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-5 px-4 py-28 text-center">
+      <div className="mx-auto flex max-w-md flex-col items-center gap-5 px-4 md:px-8 py-28 text-center">
         <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
-          <ShoppingBag className="size-7 text-muted-foreground" />
+          <ShoppingCart className="size-7 text-muted-foreground" />
         </span>
         <div className="space-y-1">
           <h1 className="font-serif text-2xl font-semibold">
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <div className="mx-auto max-w-[88rem] px-4 md:px-8 py-8">
       <div className="mb-8">
         <Link
           href="/cart"

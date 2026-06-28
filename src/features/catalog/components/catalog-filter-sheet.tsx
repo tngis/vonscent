@@ -71,10 +71,10 @@ export function CatalogFilterSheet({
         ref={contentRef}
         side="top"
         overlayClassName="bg-black/10"
-        className="flex max-h-[88vh] flex-col gap-4 rounded-b-2xl border-border bg-card/60 pb-3 backdrop-blur-xl lg:hidden"
+        className="flex max-h-[80vh] flex-col gap-4 rounded-b-2xl border-border bg-card/60 pb-3 backdrop-blur-lg lg:hidden"
       >
         <SheetTitle className="sr-only">Шүүлтүүр</SheetTitle>
-        <div className="-mx-2 flex-1 overflow-y-auto px-2">
+        <div className="no-scrollbar -mx-2 flex-1 overflow-y-auto px-2">
           <CatalogFilters brands={brands} priceBounds={priceBounds} />
         </div>
         <button

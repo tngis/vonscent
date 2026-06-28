@@ -31,7 +31,7 @@ export function WishlistButton({
       )}
     >
       <Heart
-        className={cn("size-4", active && "fill-destructive text-destructive")}
+        className={cn("size-4", active && "fill-red-500 text-red-500")}
       />
     </button>
   );

@@ -12,6 +12,17 @@ import { useFilterQuery } from "./use-filter-query";
 
 const PRICE_STEP = 1000;
 
+/** Brand name → transparent logo in /public/brands (see brand-marquee). */
+const BRAND_LOGOS: Record<string, string> = {
+  "Acqua di Parma": "/brands/acqua-di-parma.svg",
+  Chanel: "/brands/chanel.svg",
+  Creed: "/brands/creed.svg",
+  Dior: "/brands/dior.svg",
+  "Maison Margiela": "/brands/maison-margiela.svg",
+  "Tom Ford": "/brands/tom-ford.svg",
+  "Yves Saint Laurent": "/brands/yves-saint-laurent.svg",
+};
+
 const FAMILIES: { value: string; label: string }[] = [
   { value: "floral", label: "Цэцэгт" },
   { value: "woody", label: "Модлог" },
@@ -65,7 +76,7 @@ function Chip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "truncate rounded-full px-3 py-2 text-center text-sm font-medium transition-colors",
+        "truncate rounded-sm px-3 py-2 text-center text-sm font-medium transition-colors",
         active
           ? "bg-muted-foreground text-background"
           : "bg-secondary text-foreground hover:bg-accent",
@@ -106,9 +117,9 @@ export function CatalogFilters({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-lg font-semibold">Шүүлтүүр</h2>
+        <h2 className="font-serif text-lg font-semibold h-9">Шүүлтүүр</h2>
         {activeCount > 0 && (
           <Button variant="ghost" size="sm" onClick={clearAll}>
             Цэвэрлэх ({activeCount})
@@ -117,7 +128,7 @@ export function CatalogFilters({
       </div>
 
       <Group title="Хүйс">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {GENDERS.map((g) => (
             <Chip
               key={g}
@@ -132,7 +143,7 @@ export function CatalogFilters({
       <Separator />
 
       <Group title="Үнэрийн төрөл">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {FAMILIES.map((f) => (
             <Chip
               key={f.value}
@@ -224,16 +235,32 @@ export function CatalogFilters({
       )}
 
       <Group title="Брэнд">
-        <div className="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto pr-1">
-          {brands.map((b) => (
-            <Chip
-              key={b}
-              active={values("brand").includes(b)}
-              onClick={() => toggle("brand", b)}
-            >
-              {b}
-            </Chip>
-          ))}
+        <div className="grid max-h-72 grid-cols-2 gap-2 overflow-y-auto pr-1">
+          {brands.map((b) => {
+            const logo = BRAND_LOGOS[b];
+            return (
+              <Chip
+                key={b}
+                active={values("brand").includes(b)}
+                onClick={() => toggle("brand", b)}
+              >
+                {logo ? (
+                  <span className="flex h-6 items-center justify-center">
+                    <Image
+                      src={logo}
+                      alt={b}
+                      width={120}
+                      height={24}
+                      unoptimized
+                      className="brand-logo h-5 w-auto object-contain"
+                    />
+                  </span>
+                ) : (
+                  b
+                )}
+              </Chip>
+            );
+          })}
         </div>
       </Group>
     </div>

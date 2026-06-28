@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -53,12 +53,12 @@ export default function CartPage() {
     }
   }
 
-  if (!mounted) return <div className="mx-auto max-w-7xl px-4 py-16" />;
+  if (!mounted) return <div className="mx-auto max-w-[88rem] px-4 md:px-8 py-16" />;
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-24 text-center">
-        <ShoppingBag className="size-12 text-muted-foreground" />
+      <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-4 px-4 md:px-8 py-24 text-center">
+        <ShoppingCart className="size-12 text-muted-foreground" />
         <h1 className="font-serif text-2xl font-semibold">Сагс хоосон байна</h1>
         <p className="text-muted-foreground">
           Дуртай үнэртнээ сонгож сагсандаа нэмээрэй.
@@ -73,7 +73,7 @@ export default function CartPage() {
   const remaining = FREE_SHIP_OVER - subtotal;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
+    <div className="mx-auto max-w-[88rem] px-4 md:px-8 py-8">
       <h1 className="mb-8 font-serif text-3xl font-semibold">Таны сагс</h1>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_360px]">

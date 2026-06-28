@@ -90,7 +90,7 @@ export function ProductGallery({
           )}
         </div>
         {images.length > 1 && (
-          <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto">
+          <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto p-0.5">
             {images.map((img, i) => (
               <button
                 key={i}

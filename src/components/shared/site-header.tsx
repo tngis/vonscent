@@ -42,6 +42,10 @@ const TITLES: Record<string, string> = {
   "/checkout": "Захиалга",
   "/faq": "Тусламж",
   "/wishlist": "Хүслийн жагсаалт",
+  "/account": "Миний бүртгэл",
+  "/account/orders": "Миний захиалга",
+  "/account/loyalty": "Урамшуулал",
+  "/account/addresses": "Хаягууд",
   "/products": "", // full-bleed image hero — no title, just back + cart
   "/order/success": "Захиалга",
 };
@@ -78,6 +82,15 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Expose the hidden state so sticky page content (e.g. product gallery) can
+  // shrink its top offset while the header is away and clear it when it returns.
+  React.useEffect(() => {
+    document.documentElement.dataset.headerHidden = hidden ? "true" : "false";
+    return () => {
+      delete document.documentElement.dataset.headerHidden;
+    };
+  }, [hidden]);
 
   return (
     <header
@@ -116,7 +129,7 @@ export function SiteHeader() {
           isHome ? "block" : "hidden md:block",
         )}
       >
-        <div className="relative mx-auto flex h-14 max-w-6xl items-center gap-2 rounded-full bg-secondary/85 px-3 shadow-lift backdrop-blur">
+        <div className="relative mx-auto flex h-14 max-w-[88rem] items-center gap-2 rounded-full bg-secondary/85 px-3 shadow-lift backdrop-blur">
           {/* Left: mobile menu + logo */}
           <Sheet>
             <SheetTrigger asChild>

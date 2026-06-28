@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Package, HelpCircle, LogOut } from "lucide-react";
+import { Package, HelpCircle, LogOut, BookOpen, Info, Mail } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -125,6 +125,24 @@ export function ProfileMenu() {
         <DropdownMenuItem asChild>
           <Link href="/faq">
             <HelpCircle /> Түгээмэл асуулт
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link href="/blog">
+            <BookOpen /> Блог
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/about">
+            <Info /> Танилцуулга
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/contact">
+            <Mail /> Холбоо барих
           </Link>
         </DropdownMenuItem>
 
