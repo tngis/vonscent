@@ -7,7 +7,9 @@ import {
   BadgeCheck,
   Instagram,
   ArrowRight,
+  Quote,
 } from "lucide-react";
+import { formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/shared/site-footer";
 import { SectionHeading } from "@/components/shared/section-heading";
@@ -284,31 +286,72 @@ export default async function HomePage() {
           />
           <div className="grid gap-5 md:grid-cols-3">
             {reviews.map((r) => (
-              <div
+              <figure
                 key={r.id}
-                className="flex flex-col gap-3 rounded-lg border border-border p-5"
+                className="group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-gold-strong/40 hover:shadow-lift"
               >
-                <Stars rating={r.rating} size={15} />
-                <p className="text-sm text-foreground/90 line-clamp-4">
-                  {r.body || "Сайхан үнэр!"}
-                </p>
-                <div className="mt-auto text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {r.authorName}
+                <Quote
+                  className="pointer-events-none absolute -right-3 -top-3 size-20 rotate-180 text-foreground/4 transition-colors group-hover:text-gold-strong/10"
+                  strokeWidth={1.5}
+                  aria-hidden
+                />
+                <Stars rating={r.rating} size={16} />
+                <blockquote className="font-serif text-[15px] leading-relaxed text-foreground/90 line-clamp-5">
+                  “{r.body || "Сайхан үнэр!"}”
+                </blockquote>
+                <figcaption className="mt-auto flex items-center gap-3 border-t border-border/60 pt-4">
+                  <span className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-sm font-semibold">
+                    {r.authorAvatar ? (
+                      <Image
+                        src={r.authorAvatar}
+                        alt=""
+                        fill
+                        sizes="40px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      r.authorName.charAt(0).toUpperCase()
+                    )}
                   </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1">
+                      <span className="truncate text-sm font-medium text-foreground">
+                        {r.authorName}
+                      </span>
+                      <BadgeCheck
+                        className="size-3.5 shrink-0 text-gold-strong"
+                        aria-label="Баталгаажсан худалдан авагч"
+                      />
+                    </div>
+                    <span className="block text-xs text-muted-foreground">
+                      {formatDate(r.createdAt)}
+                    </span>
+                  </div>
                   {r.productName && (
-                    <>
-                      {" · "}
-                      <Link
-                        href={`/products/${r.productSlug}`}
-                        className="hover:text-primary"
-                      >
-                        {r.brand} {r.productName}
-                      </Link>
-                    </>
+                    <Link
+                      href={`/products/${r.productSlug}`}
+                      className="group/prod flex items-center gap-2"
+                      title={`${r.brand} ${r.productName}`}
+                    >
+                      <span className="relative size-11 shrink-0 overflow-hidden rounded-lg border border-border bg-muted transition-colors group-hover/prod:border-gold-strong/50">
+                        {r.productImage ? (
+                          <Image
+                            src={r.productImage}
+                            alt={r.productName}
+                            fill
+                            sizes="44px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-full items-center justify-center text-[10px] font-medium text-muted-foreground">
+                            {r.brand.charAt(0)}
+                          </span>
+                        )}
+                      </span>
+                    </Link>
                   )}
-                </div>
-              </div>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </section>

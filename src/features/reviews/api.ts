@@ -23,6 +23,7 @@ export interface RecentReview extends Review {
   productName: string;
   productSlug: string;
   brand: string;
+  productImage: string | null;
 }
 
 interface ReviewJoin {
@@ -33,7 +34,12 @@ interface ReviewJoin {
   body: string;
   created_at: string;
   profiles: { full_name: string | null; avatar_url: string | null } | null;
-  products?: { name: string; slug: string; brand: string } | null;
+  products?: {
+    name: string;
+    slug: string;
+    brand: string;
+    product_images?: { url: string; sort_order: number }[];
+  } | null;
 }
 
 async function readClient() {
@@ -104,7 +110,7 @@ export async function getRecentReviews(limit = 6): Promise<RecentReview[]> {
   const { data } = await supabase
     .from("reviews")
     .select(
-      "id, product_id, user_id, rating, body, created_at, products ( name, slug, brand )",
+      "id, product_id, user_id, rating, body, created_at, products ( name, slug, brand, product_images ( url, sort_order ) )",
     )
     .not("body", "eq", "")
     .order("created_at", { ascending: false })
@@ -114,10 +120,17 @@ export async function getRecentReviews(limit = 6): Promise<RecentReview[]> {
     supabase,
     rows.map((r) => r.user_id),
   );
-  return rows.map((r) => ({
-    ...mapReview({ ...r, profiles: profiles.get(r.user_id) ?? null }),
-    productName: r.products?.name ?? "",
-    productSlug: r.products?.slug ?? "",
-    brand: r.products?.brand ?? "",
-  }));
+  return rows.map((r) => {
+    const image =
+      [...(r.products?.product_images ?? [])].sort(
+        (a, b) => a.sort_order - b.sort_order,
+      )[0]?.url ?? null;
+    return {
+      ...mapReview({ ...r, profiles: profiles.get(r.user_id) ?? null }),
+      productName: r.products?.name ?? "",
+      productSlug: r.products?.slug ?? "",
+      brand: r.products?.brand ?? "",
+      productImage: image,
+    };
+  });
 }
