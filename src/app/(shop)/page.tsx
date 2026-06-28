@@ -333,13 +333,13 @@ export default async function HomePage() {
                       className="group/prod flex items-center gap-2"
                       title={`${r.brand} ${r.productName}`}
                     >
-                      <span className="relative size-11 shrink-0 overflow-hidden rounded-lg border border-border bg-muted transition-colors group-hover/prod:border-gold-strong/50">
+                      <span className="relative size-15 shrink-0 overflow-hidden rounded-lg border border-border bg-muted transition-colors group-hover/prod:border-gold-strong/50">
                         {r.productImage ? (
                           <Image
                             src={r.productImage}
                             alt={r.productName}
                             fill
-                            sizes="44px"
+                            sizes="60px"
                             className="object-cover"
                           />
                         ) : (
